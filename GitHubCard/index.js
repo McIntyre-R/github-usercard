@@ -3,6 +3,9 @@
            https://api.github.com/users/<your name>
 */
 
+
+
+
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
@@ -24,7 +27,6 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -46,6 +48,8 @@ const followersArray = [];
 
 */
 
+
+
 /* List of LS Instructors Github username's: 
   tetondan
   dustinmyers
@@ -53,3 +57,95 @@ const followersArray = [];
   luishrd
   bigknell
 */
+
+function cardCreator(obj){
+  const newCard = document.createElement('div'),
+        newImage = document.createElement('img'),
+        newCardInfo = document.createElement('div'),
+        newName = document.createElement('h3'),
+        newUserName = document.createElement('p'),
+        newLocation = document.createElement('p'),
+        newProfile = document.createElement('p'),
+        newLink = document.createElement ('a'),
+        newFollowers = document.createElement ('p'),
+        newFollowing = document.createElement('p'),
+        newBio = document.createElement('p');
+
+  newImage.src = obj.avatar_url;
+  newName.textContent = obj.name;
+  newUserName.textContent = obj.login;
+  newLocation.textContent = `Location ${obj.location}`;
+  newProfile.textContent = 'Profile:'
+  newLink.textContent = obj.html_url;
+  newLink.href = obj.html_url;
+  newFollowers.textContent = `Followers: ${obj.followers}`;
+  newFollowing.textContent = `Following: ${obj.following}`;
+  newBio.textContent = `Bio: ${obj.bio}`;
+
+  newCard.classList.add('card');
+  newCardInfo.classList.add('card-info');
+  newName.classList.add('name');
+  newUserName.classList.add('username');
+
+  newCard.appendChild(newImage);
+  newCard.appendChild(newCardInfo);
+  newCardInfo.appendChild(newName);
+  newCardInfo.appendChild(newUserName);
+  newCardInfo.appendChild(newLocation);
+  newCardInfo.appendChild(newProfile);
+  newProfile.appendChild(newLink);
+  newCardInfo.appendChild(newFollowers);
+  newCardInfo.appendChild(newFollowing);
+  newCardInfo.appendChild(newBio);
+
+ 
+
+  return newCard
+}
+
+const cards = document.querySelector('.cards');
+
+axios.get("https://api.github.com/users/mcintyre-r")
+.then(response => {
+  console.log(response.data);
+  cards.append(cardCreator(response.data)); 
+})
+.catch(error => {
+  console.log("the data was not returned", error);
+})
+
+
+
+const followersArray = [];
+
+
+axios.get('https://api.github.com/users/mcintyre-r/followers')
+.then(response => {
+  response.data.forEach(e => {
+    followersArray.push('https://api.github.com/users/' + e.login)
+  })
+  followersArray.forEach(e => {
+    axios.get(e)
+    .then(response => {
+      cards.append(cardCreator(response.data)); 
+    })
+    .catch(error => {
+      console.log("the data was not returned", error);
+    })
+  })
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
